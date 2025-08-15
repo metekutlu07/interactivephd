@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AR Redirect</title>
+  <body>
+    <p>Launching AR… If it does not open, use the links below.</p>
+    <p><a id="ios" href="models/object.usdz">Open on iOS (USDZ)</a></p>
+    <p><a id="and" href="models/object.glb">Open on Android (GLB)</a></p>
+    <script>
+      const usdz = 'https://username.github.io/repo/models/object.usdz';
+      const glb  = 'https://username.github.io/repo/models/object.glb';
+
+      const ua = navigator.userAgent || '';
+      const isIOS = /iPhone|iPad|iPod/.test(ua);
+      const isAndroid = /Android/.test(ua);
+
+      if (isIOS) {
+        // Quick Look opens directly from a .usdz URL
+        window.location.href = usdz;
+      } else if (isAndroid) {
+        // Prefer Scene Viewer intent; fall back to https GLB if intent fails
+        const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(glb)}&mode=ar_preferred#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;end;`;
+        // Try intent, then fallback after a short delay
+        const t = setTimeout(() => { window.location.href = glb; }, 1200);
+        window.location.href = intent;
+        window.addEventListener('pagehide', () => clearTimeout(t));
+      }
+    </script>
+  </body>
+</html>
